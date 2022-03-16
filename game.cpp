@@ -1,12 +1,24 @@
 #include <GL\glew.h>
 #include <GL\freeglut.h>
-
+#include <ctime>
 #include "game.h"
 
-int gridX, gridY;
-short sDirection = RIGHT;
 
-int posX = 20, posY = 20;
+bool length_inc = false;
+//bool seedflag = false;
+
+extern int score;
+extern bool gameOver;
+bool food = true;
+
+int gridX=0, gridY=0;
+short sDirection = RIGHT;
+int foodX, foodY;
+
+
+int posX[60] = { 20,20,20,20,20 };
+int posY[60] = { 20,19,18,17,16 };
+int snakeLength = 5;
 
 void initGrid(int x, int y) {
 	gridX = x;
@@ -19,7 +31,7 @@ void unit(int x, int y) {
 		glLineWidth(3);
 		glColor3f(1, 0, 0);
 	}
-	else{
+	else {
 		glLineWidth(1);
 		glColor3f(1, 1, 1);
 	}
@@ -44,16 +56,72 @@ void drawGrid() {
 }
 
 
+
+//changes
 void drawSnake() {
+
+	for(int i= snakeLength-1;i>0;i--){
+		posX[i] = posX[i - 1];
+		posY[i] = posY[i - 1];
+
+	}
 	if (sDirection == UP)
-		posY++;
+		posY[0]++;
 	else if (sDirection == DOWN)
-		posY--;
+		posY[0]--;
 	else if (sDirection == RIGHT)
-		posX++;
+		posX[0]++;
 	else if (sDirection == LEFT)
-		posX--;
+		posX[0]--;
+	for (int i = 0; i < snakeLength; i++) {
 
-	glRectd(posX, posY, posX+1, posY+1);
+		if (i == 0)
+			glColor3f(0, 1, 0);
+		else
+			glColor3f(0, 0, 1);
 
+	glRectd(posX[i], posY[i], posX[i] + 1, posY[i] + 1);
+	}
+
+	if (posX[0] == 0 || posY[0] == 0 || posX[0] == gridX - 1 || posY[0] == gridY - 1)
+		gameOver = true;
+	else if (posX[0] == foodX && posY[0] == foodY) {
+		
+		score++;
+		snakeLength++;
+		if (snakeLength > MAX) {
+			snakeLength = MAX;
+			MessageBox(NULL, L"You Win\nYou can still keep playing but the snake will not grow.", L"Awsome", 0);
+		}
+		food = true;
+
+	}
+	else {
+		for (int j = 1; j < snakeLength; j++)
+		{
+			if (posX[j] == posX[0] && posY[j] == posY[0])
+				gameOver = true;
+		}
+
+	}
+}
+
+void drawFood() {
+	if (food)
+		random(foodX, foodY);
+	food = false;
+	glColor3f(1, 0, 0);
+	glRectf(foodX, foodY, foodX + 1, foodY + 1);
+}
+
+
+
+void random(int& x, int& y) {
+
+	int _maxX = gridX - 2;
+	int _maxY = gridY - 2;
+	int _min = 1;
+	srand(time(NULL));
+	x = _min + rand() % (_maxX - _min);
+	y = _min + rand() % (_maxY - _min);
 }
