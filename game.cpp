@@ -3,6 +3,7 @@
 #include <ctime>
 #include "game.h"
 
+bool useGrid = false;
 
 bool length_inc = false;
 //bool seedflag = false;
@@ -16,8 +17,8 @@ short sDirection = RIGHT;
 int foodX, foodY;
 
 
-int posX[60] = { 20,20,20,20,20 };
-int posY[60] = { 20,19,18,17,16 };
+int posX[MAX] = { 20,20,20,20,20 };
+int posY[MAX] = { 20,19,18,17,16 };
 int snakeLength = 5;
 
 void initGrid(int x, int y) {
@@ -29,20 +30,32 @@ void unit(int x, int y) {
 
 	if (x == 0 || y == 0 || x == gridX - 1 || y == gridY - 1) {
 		glLineWidth(3);
-		glColor3f(1, 0, 0);
+		glColor3f(0.5, 0.5, 0.5);
+
+
+		glBegin(GL_POLYGON);
+
+		glVertex2f(x, y);
+		glVertex2f(x + 1, y);
+		glVertex2f(x + 1, y + 1);
+		glVertex2f(x, y + 1);
+
+		glEnd();
 	}
 	else {
 		glLineWidth(1);
 		glColor3f(1, 1, 1);
+		if (useGrid) {
+			glBegin(GL_LINE_LOOP);
+
+			glVertex2f(x, y);
+			glVertex2f(x + 1, y);
+			glVertex2f(x + 1, y + 1);
+			glVertex2f(x, y + 1);
+
+			glEnd();
+		}
 	}
-	glBegin(GL_LINE_LOOP);
-
-	glVertex2f(x, y);
-	glVertex2f(x + 1, y);
-	glVertex2f(x + 1, y + 1);
-	glVertex2f(x, y + 1);
-
-	glEnd();
 }
 
 void drawGrid() {
@@ -76,9 +89,9 @@ void drawSnake() {
 	for (int i = 0; i < snakeLength; i++) {
 
 		if (i == 0)
-			glColor3f(0, 1, 0);
+			glColor3f(0, 0.5, 1);
 		else
-			glColor3f(0, 0, 1);
+			glColor3f(0, 0.2, 0.2);
 
 	glRectd(posX[i], posY[i], posX[i] + 1, posY[i] + 1);
 	}
@@ -110,7 +123,7 @@ void drawFood() {
 	if (food)
 		random(foodX, foodY);
 	food = false;
-	glColor3f(1, 0, 0);
+	glColor3f(0.7, 0.1, 0.7);
 	glRectf(foodX, foodY, foodX + 1, foodY + 1);
 }
 
@@ -124,4 +137,5 @@ void random(int& x, int& y) {
 	srand(time(NULL));
 	x = _min + rand() % (_maxX - _min);
 	y = _min + rand() % (_maxY - _min);
+	
 }

@@ -2,7 +2,7 @@
 #define GAME_H_INCLUDED
 
 
-#define MAX 60
+#define MAX 100
 
 #define UP 1
 #define DOWN -1
